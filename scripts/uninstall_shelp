@@ -1,0 +1,4 @@
+#! /bin/bash
+
+rm -rf $HOME/.local/share/shelp
+rm $HOME/.local/bin/shelp

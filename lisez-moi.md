@@ -10,14 +10,23 @@ Framework léger pour la gestions de scripts shell.
 git clone git@gitlab.local:datalyse/shelp $HOME/.local/share/shelp
 ln -s $HOME/.local/share/shelp/bin/shelp  $HOME/.local/bin/shelp
 
-
 # ou à partir du script d'installation
-curl gitlab.local/datalyse/shelp-tests/-/raw/master/scripts/install_shelp | bash_
+curl gitlab.local/datalyse/shelp/-/raw/master/scripts/install_shelp | bash
 
+# Désinstalle
+$HOME/.local/share/shelp/scripts/uninstall
 
 
 # Installe les scripts externes
 shelp install gitlab.local:datalyse/shelp-tests
+
+# Désinstalle un script externe
+shelp uninstall shelp-tests
+
+
+# affiche a liste des scripts disponibles
+shelp list
+
 
 # Utilise les scripts
 shx shelp-tests list
