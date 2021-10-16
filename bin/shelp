@@ -1,9 +1,12 @@
 #! /bin/bash
 
-set -x
 shelp()(
+ set -eu -o pipefail
 
 
+ failed(){
+     >&2 echo -e "\nSHELP ERROR\nFailed $@\n" && exit 1 ;
+ }
 
  usage(){
  cat <<-EOM
@@ -15,18 +18,32 @@ EOM
 
  }
 
+  install(){
 
-case ${1:-usage} in
-  usage|help|h|-h|--help)
-    usage ;;
+    NAME=${1/\:/\/}
+    NAME=${NAME/@/\/}
+    NAME=$(basename $NAME)
+    NAME=${NAME%.*}
+    git clone $1 $HOME/.local/share/$NAME || failed to retrieve project $NAME "$1"
+    ln -s $HOME/.local/share/$NAME/bin/$NAME  $HOME/.local/bin/shelp-$NAME
+
+  }
+
+
+
+# Parse et valide les arguments
+SHELP_COMMAND=${1:-usage}
+
+case ${SHELP_COMMAND} in
+  usage|help|h|-h|--help) set -- usage ${@:2} ;;
+  i|install) set -- install ${@:2} ;;
   *)
     echo "Commande '$1' non reconnu"; exit 1
     ;;
 esac
 
-
+# execute
 $@
-
 
 )
 
