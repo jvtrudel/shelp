@@ -35,6 +35,13 @@ EOM
 
   }
 
+  update(){
+    NAME=${1:-}
+    # todo: gestion d'erreur
+    git -C $HOME/.local/share/$NAME  pull || failed to update "'${NAME}'"
+
+  }
+
 
 
 # Parse et valide les arguments
@@ -43,7 +50,8 @@ SHELP_COMMAND=${1:-usage}
 case ${SHELP_COMMAND} in
   usage|help|h|-h|--help) set -- usage ${@:2} ;;
   i|install) set -- install ${@:2} ;;
-  u|uninstall|remove) set -- uninstall ${@:2} ;;
+  r|uninstall|remove) set -- uninstall ${@:2} ;;
+  u|update) set -- update ${@:2} ;;
   *)
     echo "Commande '$1' non reconnu"; exit 1
     ;;
