@@ -1,0 +1,13 @@
+#! /bin/bash
+
+shx()(
+
+  set -eu -o pipefail
+
+   shelp-$@
+
+
+
+)
+
+[ "${BASH_SOURCE[0]}"  != "$0" ] || shx $@
