@@ -19,13 +19,19 @@ EOM
  }
 
   install(){
-
     NAME=${1/\:/\/}
     NAME=${NAME/@/\/}
     NAME=$(basename $NAME)
     NAME=${NAME%.*}
     git clone $1 $HOME/.local/share/$NAME || failed to retrieve project $NAME "$1"
     ln -s $HOME/.local/share/$NAME/bin/$NAME  $HOME/.local/bin/shelp-$NAME
+  }
+
+
+  uninstall(){
+    NAME=$1
+    rm -rf $HOME/.local/share/$NAME \
+    && rm $HOME/.local/bin/shelp-$NAME || failed to find project $NAME
 
   }
 
@@ -37,6 +43,7 @@ SHELP_COMMAND=${1:-usage}
 case ${SHELP_COMMAND} in
   usage|help|h|-h|--help) set -- usage ${@:2} ;;
   i|install) set -- install ${@:2} ;;
+  u|uninstall|remove) set -- uninstall ${@:2} ;;
   *)
     echo "Commande '$1' non reconnu"; exit 1
     ;;
