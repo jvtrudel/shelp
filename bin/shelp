@@ -3,7 +3,6 @@
 shelp()(
  set -eu -o pipefail
 
-
  failed(){
      >&2 echo -e "\nSHELP ERROR\nFailed $@\n" && exit 1 ;
  }
@@ -32,17 +31,19 @@ EOM
     NAME=$1
     rm -rf $HOME/.local/share/$NAME \
     && rm $HOME/.local/bin/shelp-$NAME || failed to find project $NAME
-
   }
 
   update(){
     NAME=${1:-}
     # todo: gestion d'erreur
     git -C $HOME/.local/share/$NAME  pull || failed to update "'${NAME}'"
-
   }
 
+  list(){
+    { ls $HOME/.local/bin/ 2> /dev/null || echo No script found ; } \
+    | grep ^shelp-| sed 's/shelp-\(.*\)/\1/'
 
+  }
 
 # Parse et valide les arguments
 SHELP_COMMAND=${1:-usage}
@@ -52,6 +53,7 @@ case ${SHELP_COMMAND} in
   i|install) set -- install ${@:2} ;;
   r|uninstall|remove) set -- uninstall ${@:2} ;;
   u|update) set -- update ${@:2} ;;
+  l|list|ls) set -- list ${@:2} ;;
   *)
     echo "Commande '$1' non reconnu"; exit 1
     ;;
