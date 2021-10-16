@@ -34,7 +34,7 @@ EOM
   }
 
   update(){
-    NAME=${1:-}
+    NAME=${1:-shelp}
     # todo: gestion d'erreur
     git -C $HOME/.local/share/$NAME  pull || failed to update "'${NAME}'"
   }
