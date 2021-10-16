@@ -1,0 +1,34 @@
+#! /bin/bash
+
+set -x
+shelp()(
+
+
+
+ usage(){
+ cat <<-EOM
+
+   NAME
+      shelp  -  Framework léger pour la gestions de scripts shell
+
+EOM
+
+ }
+
+
+case ${1:-usage} in
+  usage|help|h|-h|--help)
+    usage ;;
+  *)
+    echo "Commande '$1' non reconnu"; exit 1
+    ;;
+esac
+
+
+$@
+
+
+)
+
+
+[ "${BASH_SOURCE[0]}"  != "$0" ] || shelp $@
