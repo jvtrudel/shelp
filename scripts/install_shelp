@@ -1,0 +1,4 @@
+#! /bin/bash
+
+git clone git@gitlab.local:datalyse/shelp $HOME/.local/share/shelp
+ln -s $HOME/.local/share/shelp/bin/shelp  $HOME/.local/bin/shelp
