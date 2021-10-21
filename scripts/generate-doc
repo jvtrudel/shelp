@@ -1,0 +1,4 @@
+#! /bin/bash
+
+shelp > doc/shelp-man.md
+shx > doc/shx-man.md

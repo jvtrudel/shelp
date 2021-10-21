@@ -5,53 +5,8 @@ Framework léger pour la gestions de scripts shell.
 
 ## Usage
 
-```
-# Installe SHelp
-git clone git@gitlab.local:datalyse/shelp $HOME/.local/share/shelp
-ln -s $HOME/.local/share/shelp/bin/shelp  $HOME/.local/bin/shelp
-
-# ou à partir du script d'installation
-curl gitlab.local/datalyse/shelp/-/raw/master/scripts/install_shelp | bash
-
-# Désinstalle
-$HOME/.local/share/shelp/scripts/uninstall
-
-
-# Installe les scripts externes
-shelp install gitlab.local:datalyse/shelp-tests
-
-# Désinstalle un script externe
-shelp uninstall shelp-tests
-
-
-# affiche a liste des scripts disponibles
-shelp list
-
-
-# Utilise les scripts
-shx shelp-tests list
-
-
-# Consulte le manuel de SHelp
-shelp
-
-# Consulte le manuel d'un script
-shx shelp-tests help
-
-# Obtient la liste des scripts disponibles
-shelp list
-
-```
-
-
-```
-# Met à jour de SHelp
-shelp update
-
-# Met à jour un script
-shelp update shelp-tests
-
-```
+  - [Utilisation de shelp. Voir le manuel de shelp](./doc/shelp-man.md)
+  - [Utilisation de shx. Voir le manuel](./doc/shx-man.md)
 
 
 
@@ -82,3 +37,4 @@ shelp update shelp-tests
 
   - Doivent pouvoir s'installer de la même manière que SHelp lui-même
   - Doivent pouvoir être reconnu par SHelp (implémente toutes les fonctionnalités core du framework)
+  - Doivent avoir un point d'entré unique qui peut être exécuté en tant que commande cli et sourcé

@@ -13,8 +13,39 @@ shelp()(
    NAME
       shelp  -  Framework léger pour la gestions de scripts shell
 
-EOM
+   SYNOPSIS
 
+    Information sur l'état de shelp
+      Affiche l'aide
+        shelp
+        shelp help|man|usage
+
+    Gestion de shelp
+      Installe
+        curl gitlab.local/datalyse/shelp/-/raw/master/scripts/install_shelp | bash
+      Désinstalle
+        shelp uninstall|remove|delete
+      Met à jour
+        shelp update
+
+      Gestion des scripts
+        shelp install <git repo>    # installe un script
+        shelp uninstall <script id>
+        shelp update <script id>
+
+      Édition des scripts
+        Génère un projet de script
+          shelp new \$SCRIPT_ID
+        Relie le script à un repo remote
+          shelp link \$SCRIPT_ID \$ORIGIN_URL
+        Affiche le répertoire vers le script
+          shelp path \$SCRIPT_ID
+        Affiche le path vers le répertoire du script
+          shelp dir \$SCRIPT_ID
+        Sauvegarde des modifications
+          shelp save \$SCRIPT_ID [ "\$COMMIT_MESSAGE" ]
+
+EOM
  }
 
   install(){
@@ -24,13 +55,16 @@ EOM
     NAME=${NAME%.*}
     git clone $1 $HOME/.local/share/$NAME || failed to retrieve project $NAME "$1"
     ln -s $HOME/.local/share/$NAME/bin/$NAME  $HOME/.local/bin/shelp-$NAME
+    ln -s $HOME/.local/share/$NAME/bin/$NAME  $HOME/.local/bin/$NAME
+
   }
 
 
   uninstall(){
     NAME=$1
     rm -rf $HOME/.local/share/$NAME \
-    && rm $HOME/.local/bin/shelp-$NAME || failed to find project $NAME
+    && rm $HOME/.local/bin/shelp-$NAME  && rm $HOME/.local/bin/$NAME \
+    || failed to find project $NAME
   }
 
   update(){

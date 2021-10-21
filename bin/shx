@@ -4,8 +4,39 @@ shx()(
 
   set -eu -o pipefail
 
-   shelp-$@
+  failed(){
+    >&2 echo -e "\nSHX ERROR\nFailed $@\n" && exit 1 ;
+  }
 
+  usage(){
+    cat <<-EOM
+
+    NAME
+       shx  -  Exécute les scripts sous la gestion de shelp
+
+   SYNOPSIS
+
+    Information sur l'état de shx
+      Affiche l'aide
+        shx
+        shx help|man|usage
+
+EOM
+
+ }
+
+ # Parse et valide les arguments
+ SHELP_COMMAND=${1:-usage}
+
+ case ${SHELP_COMMAND} in
+   usage|help|h|-h|--help) set -- usage ${@:2} ;;
+   *) # todo: vérifier is le projet existe
+     set -- shelp-$@
+     ;;
+ esac
+
+ # execute
+ $@
 
 
 )
