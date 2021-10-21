@@ -171,6 +171,14 @@ EOMM
     git -C $(_directory $SCRIPT_ID) push -u origin master
   }
 
+  _save(){
+   SCRIPT_ID=$1
+   MESSAGE=${@:2}
+   git -C $(_directory $SCRIPT_ID) add .
+   git -C $(_directory $SCRIPT_ID) commit -m "${MESSAGE:-commit using shelp save}"
+   git -C $(_directory $SCRIPT_ID) push
+  }
+
 
 # Parse et valide les arguments
 SHELP_COMMAND=${1:-usage}
@@ -185,6 +193,7 @@ case ${SHELP_COMMAND} in
   p|path) set -- path ${@:2} ;;
   dir) set -- _directory ${@:2} ;;
   link) set -- _link ${@:2} ;;
+  save) set -- _save ${@:2} ;;
   *)
     echo "Commande '$1' non reconnu"; exit 1
     ;;
