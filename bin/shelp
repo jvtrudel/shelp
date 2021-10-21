@@ -48,12 +48,81 @@ shelp()(
 EOM
  }
 
+  SCRIPTS_ROOT=$HOME/.local/share
+
+  new(){
+    SCRIPT_ID=$1
+    SCRIPT_DIR=$SCRIPTS_ROOT/$SCRIPT_ID
+
+    [ ! -d "$SCRIPT_DIR" ] || failed "to generate new script (répertoire existe)"
+    which $SCRIPT_ID 2>/dev/null 1>/dev/null && failed "to generate new script (exécutable '$SCRIPT_ID' existe déjà)" || :
+    git init "$SCRIPT_DIR"
+    mkdir $SCRIPT_DIR/bin
+    touch $SCRIPT_DIR/lisez-moi.md
+    ln -s $SCRIPT_DIR/lisez-moi.md $SCRIPT_DIR/readme.md
+
+  cat <<-EOMM > $SCRIPT_DIR/bin/$SCRIPT_ID
+
+#! /bin/bash
+
+$SCRIPT_ID()(
+  set -eu -o pipefail
+
+     failed(){
+         >&2 echo -e "\nSHELP ERROR\nFailed \$@\n" && exit 1 ;
+     }
+
+     usage(){
+     cat <<-EOM
+
+        NAME
+           $SCRIPT_ID  -  Brève description de $SCRIPT_ID
+
+        SYNOPSIS
+
+         Information sur $SCRIPT_ID
+           Affiche l'aide
+             $SCRIPT_ID
+             $SCRIPT_ID help|man|usage
+
+EOM
+}
+
+
+# Parse et valide les arguments
+${SCRIPT_ID}_COMMAND=\${1:-usage}
+
+case \${${SCRIPT_ID}_COMMAND} in
+  usage|help|man|h|-h|--help) set -- usage \${@:2} ;;
+  *)
+    echo "Commande '\$1' non reconnu"; exit 1
+    ;;
+esac
+
+# execute
+\$@
+
+)
+
+
+[ "\${BASH_SOURCE[0]}"  != "\$0" ] || $SCRIPT_ID \$@
+
+EOMM
+
+    chmod +x $SCRIPT_DIR/bin/$SCRIPT_ID
+    ln -s $SCRIPTS_ROOT/$SCRIPT_ID/bin/$SCRIPT_ID  $HOME/.local/bin/shelp-$SCRIPT_ID
+    ln -s $SCRIPTS_ROOT/$SCRIPT_ID/bin/$SCRIPT_ID  $HOME/.local/bin/$SCRIPT_ID
+
+  }
+
+
+
   install(){
     NAME=${1/\:/\/}
     NAME=${NAME/@/\/}
     NAME=$(basename $NAME)
     NAME=${NAME%.*}
-    git clone $1 $HOME/.local/share/$NAME || failed to retrieve project $NAME "$1"
+    git clone $1 $SCRIPTS_ROOT/$NAME || failed to retrieve project $NAME "$1"
     ln -s $HOME/.local/share/$NAME/bin/$NAME  $HOME/.local/bin/shelp-$NAME
     ln -s $HOME/.local/share/$NAME/bin/$NAME  $HOME/.local/bin/$NAME
 
@@ -76,7 +145,6 @@ EOM
   list(){
     { ls $HOME/.local/bin/ 2> /dev/null || echo No script found ; } \
     | grep ^shelp-| sed 's/shelp-\(.*\)/\1/'
-
   }
 
 # Parse et valide les arguments
@@ -88,6 +156,7 @@ case ${SHELP_COMMAND} in
   r|uninstall|remove) set -- uninstall ${@:2} ;;
   u|update) set -- update ${@:2} ;;
   l|list|ls) set -- list ${@:2} ;;
+  n|new) set -- new ${@:2} ;;
   *)
     echo "Commande '$1' non reconnu"; exit 1
     ;;
