@@ -113,6 +113,9 @@ EOMM
     ln -s $SCRIPTS_ROOT/$SCRIPT_ID/bin/$SCRIPT_ID  $HOME/.local/bin/shelp-$SCRIPT_ID
     ln -s $SCRIPTS_ROOT/$SCRIPT_ID/bin/$SCRIPT_ID  $HOME/.local/bin/$SCRIPT_ID
 
+    git -C "$SCRIPT_DIR" add .
+    git -C "$SCRIPT_DIR" commit -m "Initialisaiton de $SCRIPT_ID avec shelp"
+
   }
 
 
@@ -153,11 +156,19 @@ EOMM
     [ -f "$SCRIPT_PATH" ] && echo $SCRIPT_PATH || failed to retrieve path for $SCRIPT_ID
    }
 
-  directory(){
+  _directory(){
     SCRIPT_ID=$1
     SCRIPT_DIR=$SCRIPTS_ROOT/$SCRIPT_ID
     [ -d "$SCRIPT_DIR" ] && echo $SCRIPT_DIR || failed to retrieve directory for $SCRIPT_ID
 
+  }
+
+  _link(){
+    SCRIPT_ID=$1
+    REMOTE_URL=$2
+    git -C $(_directory $SCRIPT_ID) remote add origin $REMOTE_URL
+    git -C $(_directory $SCRIPT_ID) ls-remote 1>/dev/null 2>/dev/null || failed to link $SCRIPT_ID to $REMOTE_URL
+    git -C $(_directory $SCRIPT_ID) push -u origin master
   }
 
 
@@ -172,9 +183,8 @@ case ${SHELP_COMMAND} in
   l|list|ls) set -- list ${@:2} ;;
   n|new) set -- new ${@:2} ;;
   p|path) set -- path ${@:2} ;;
-  dir) set -- directory ${@:2} ;;
-
-
+  dir) set -- _directory ${@:2} ;;
+  link) set -- _link ${@:2} ;;
   *)
     echo "Commande '$1' non reconnu"; exit 1
     ;;
