@@ -147,6 +147,20 @@ EOMM
     | grep ^shelp-| sed 's/shelp-\(.*\)/\1/'
   }
 
+  path(){
+    SCRIPT_ID=$1
+    SCRIPT_PATH=$SCRIPTS_ROOT/$SCRIPT_ID/bin/$SCRIPT_ID
+    [ -f "$SCRIPT_PATH" ] && echo $SCRIPT_PATH || failed to retrieve path for $SCRIPT_ID
+   }
+
+  directory(){
+    SCRIPT_ID=$1
+    SCRIPT_DIR=$SCRIPTS_ROOT/$SCRIPT_ID
+    [ -d "$SCRIPT_DIR" ] && echo $SCRIPT_DIR || failed to retrieve directory for $SCRIPT_ID
+
+  }
+
+
 # Parse et valide les arguments
 SHELP_COMMAND=${1:-usage}
 
@@ -157,6 +171,10 @@ case ${SHELP_COMMAND} in
   u|update) set -- update ${@:2} ;;
   l|list|ls) set -- list ${@:2} ;;
   n|new) set -- new ${@:2} ;;
+  p|path) set -- path ${@:2} ;;
+  dir) set -- directory ${@:2} ;;
+
+
   *)
     echo "Commande '$1' non reconnu"; exit 1
     ;;
