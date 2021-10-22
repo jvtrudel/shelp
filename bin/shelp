@@ -44,7 +44,8 @@ shelp()(
           shelp dir \$SCRIPT_ID
         Sauvegarde des modifications
           shelp save \$SCRIPT_ID [ "\$COMMIT_MESSAGE" ]
-
+        Ajoute une commande
+          shelp add-command \$SCRIPT_ID \$COMMAND_NAME
 EOM
  }
 
@@ -67,9 +68,9 @@ EOM
 
 $SCRIPT_ID()(
   set -eu -o pipefail
-
+     SCRIPT_BASE=\$(dirname \$(dirname "\$(readlink -f \${BASH_SOURCE[0]})"))
      failed(){
-         >&2 echo -e "\nSHELP ERROR\nFailed \$@\n" && exit 1 ;
+         >&2 echo -e "\n$SCRIPT_ID ERROR\nFailed \$@\n" && exit 1 ;
      }
 
      usage(){
@@ -88,12 +89,14 @@ $SCRIPT_ID()(
 EOM
 }
 
+# Commands functions
 
 # Parse et valide les arguments
 ${SCRIPT_ID}_COMMAND=\${1:-usage}
 
 case \${${SCRIPT_ID}_COMMAND} in
   usage|help|man|h|-h|--help) set -- usage \${@:2} ;;
+  # Commands arguments
   *)
     echo "Commande '\$1' non reconnu"; exit 1
     ;;
@@ -150,7 +153,7 @@ EOMM
     | grep ^shelp-| sed 's/shelp-\(.*\)/\1/'
   }
 
-  path(){
+  _path(){
     SCRIPT_ID=$1
     SCRIPT_PATH=$SCRIPTS_ROOT/$SCRIPT_ID/bin/$SCRIPT_ID
     [ -f "$SCRIPT_PATH" ] && echo $SCRIPT_PATH || failed to retrieve path for $SCRIPT_ID
@@ -179,6 +182,45 @@ EOMM
    git -C $(_directory $SCRIPT_ID) push
   }
 
+ _add_command(){
+   #set -x
+
+   SCRIPT_ID=$1
+   COMMAND_NAME=$2
+   file=$(_path $SCRIPT_ID)
+   output_file=/tmp/$(uuidgen)
+   echo"" > $output_file
+
+
+  # Commands functions
+  while read line
+  do
+    echo $line  >> $output_file
+    echo $line | grep -q "# Commands functions" && {
+    cat <<-EOM >> $output_file
+ _${COMMAND_NAME/-/_}(){
+  echo "IMPLEMENT $COMMAND_NAME function here"
+ }
+EOM
+} || :
+
+echo $line | grep -q "# Commands arguments" && {
+cat <<-EOM >> $output_file
+  ${COMMAND_NAME})  set -- _${COMMAND_NAME/-/_} \${@:2} ;;
+
+EOM
+} || :
+
+  done < $file
+
+ mv $output_file $file
+ chmod +x $file
+
+  # Commands arguments
+
+ }
+
+
 
 # Parse et valide les arguments
 SHELP_COMMAND=${1:-usage}
@@ -190,10 +232,11 @@ case ${SHELP_COMMAND} in
   u|update) set -- update ${@:2} ;;
   l|list|ls) set -- list ${@:2} ;;
   n|new) set -- new ${@:2} ;;
-  p|path) set -- path ${@:2} ;;
+  p|path) set -- _path ${@:2} ;;
   dir) set -- _directory ${@:2} ;;
   link) set -- _link ${@:2} ;;
   save) set -- _save ${@:2} ;;
+  add-command) set -- _add_command ${@:2} ;;
   *)
     echo "Commande '$1' non reconnu"; exit 1
     ;;

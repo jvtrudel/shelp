@@ -33,4 +33,5 @@
           shelp dir $SCRIPT_ID
         Sauvegarde des modifications
           shelp save $SCRIPT_ID [ "$COMMIT_MESSAGE" ]
-
+        Ajoute une commande
+          shelp add-command $SCRIPT_ID $COMMAND_NAME
