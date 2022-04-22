@@ -22,7 +22,7 @@ shelp()(
 
     Gestion de shelp
       Installe
-        curl gitlab.local/datalyse/shelp/-/raw/master/scripts/install_shelp | bash
+        git clone git@github.com:jvtrudel/shelp.git ; shelp/bin/shelp init
       Désinstalle
         shelp uninstall|remove|delete
       Met à jour
@@ -50,12 +50,26 @@ EOM
  }
 
   SCRIPTS_ROOT=$HOME/.local/share
+  SCRIPTS_BIN=$HOME/.local/bin
+
+  _init_shelp(){
+    mkdir -p "$SCRIPTS_ROOT"
+    mkdir -p "$SCRIPTS_BIN"
+    BASE="$(realpath $(dirname $(readlink -f ${BASH_SOURCE[0]}))/.. )"
+    [ ! -d $SCRIPTS_ROOT/shelp ] || rm -rf $SCRIPTS_ROOT/shelp
+    ln -s $BASE $SCRIPTS_ROOT/shelp
+    [ ! -f $SCRIPTS_BIN/shelp ] || rm -rf $SCRIPTS_BIN/shelp
+    ln -s $BASE/bin/shelp $SCRIPTS_BIN/shelp
+    [ ! -f $SCRIPTS_BIN/shx ] || rm -rf $SCRIPTS_BIN/shx
+    ln -s $BASE/bin/shx $SCRIPTS_BIN/shx
+
+  }
 
   new(){
     SCRIPT_ID=$1
     SCRIPT_DIR=$SCRIPTS_ROOT/$SCRIPT_ID
 
-    [ ! -d "$SCRIPT_DIR" ] || failed "to generate new script (répertoire existe)"
+    [ ! -d "$SCRIPT_DIR" ] || failed "to generate new script (répertoire existe $SCRIPT_DIR )"
     which $SCRIPT_ID 2>/dev/null 1>/dev/null && failed "to generate new script (exécutable '$SCRIPT_ID' existe déjà)" || :
     git init "$SCRIPT_DIR"
     mkdir $SCRIPT_DIR/bin
@@ -221,7 +235,6 @@ EOM
  }
 
 
-
 # Parse et valide les arguments
 SHELP_COMMAND=${1:-usage}
 
@@ -237,6 +250,7 @@ case ${SHELP_COMMAND} in
   link) set -- _link ${@:2} ;;
   save) set -- _save ${@:2} ;;
   add-command) set -- _add_command ${@:2} ;;
+  init) set -- _init_shelp ${@:2} ;;
   *)
     echo "Commande '$1' non reconnu"; exit 1
     ;;

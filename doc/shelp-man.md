@@ -11,7 +11,7 @@
 
     Gestion de shelp
       Installe
-        curl gitlab.local/datalyse/shelp/-/raw/master/scripts/install_shelp | bash
+        git clone git@github.com:jvtrudel/shelp.git ; shelp/bin/shelp init
       Désinstalle
         shelp uninstall|remove|delete
       Met à jour
