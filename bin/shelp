@@ -241,7 +241,7 @@ SHELP_COMMAND=${1:-usage}
 case ${SHELP_COMMAND} in
   usage|help|h|-h|--help) set -- usage ${@:2} ;;
   i|install) set -- install ${@:2} ;;
-  r|uninstall|remove) set -- uninstall ${@:2} ;;
+  r|rm|uninstall|remove) set -- uninstall ${@:2} ;;
   u|update) set -- update ${@:2} ;;
   l|list|ls) set -- list ${@:2} ;;
   n|new) set -- new ${@:2} ;;
