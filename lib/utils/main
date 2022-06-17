@@ -1,0 +1,10 @@
+######
+# Catch standard output and error in variables OUT and ERR
+catch_std(){ 
+  OUT=$($@ 2> errFile);
+  ERR=$(<errFile);
+  export OUT;
+  export ERR; 
+  echo $OUT;
+  >&2 echo $ERR;
+}
