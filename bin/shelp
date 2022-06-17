@@ -46,8 +46,24 @@ shelp()(
           shelp save \$SCRIPT_ID [ "\$COMMIT_MESSAGE" ]
         Ajoute une commande
           shelp add-command \$SCRIPT_ID \$COMMAND_NAME
+
+       Accès aux librairies
+          shelp lib LIBNAME 
+
+   EXEMPLE
+
+     Source la libraiie 'utils'
+  
+       . <(shelp lib utils)
+
 EOM
  }
+
+
+
+
+  SRC="$(readlink -f $(dirname $(readlink -f ${BASH_SOURCE[0]}))/.. )"
+
 
   SCRIPTS_ROOT=$HOME/.local/share
   SCRIPTS_BIN=$HOME/.local/bin
@@ -233,6 +249,17 @@ EOM
   # Commands arguments
 
  }
+  ######
+  # Print a 'library'
+  ######
+  _lib(){
+    
+    for lib in "${@:-}" ; do   # todo: remove duplicated
+      lib_main="$SRC"/lib/${lib:-}/main
+      [ -f "$lib_main" ] || failed "Library '${lib:-}' not found"
+      cat "$lib_main"
+    done
+  }
 
 
 # Parse et valide les arguments
@@ -251,6 +278,7 @@ case ${SHELP_COMMAND} in
   save) set -- _save ${@:2} ;;
   add-command) set -- _add_command ${@:2} ;;
   init) set -- _init_shelp ${@:2} ;;
+  lib) set -- _lib ${@:2} ;;
   *)
     echo "Commande '$1' non reconnu"; exit 1
     ;;

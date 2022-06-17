@@ -1,10 +1,19 @@
 ######
 # Catch standard output and error in variables OUT and ERR
 catch_std(){ 
-  OUT=$($@ 2> errFile);
-  ERR=$(<errFile);
+  errFile=$(mktemp /tmp/XXXXXXXX.catch_std)
+  trap "rm \"$errFile\"; trap - RETURN" RETURN
+  OUT=$($@ 2> "$errFile");
+  ERR=$(<"$errFile");
   export OUT;
   export ERR; 
-  echo $OUT;
-  >&2 echo $ERR;
+  echo "$OUT";
+  >&2 echo "$ERR";
 }
+
+cstd(){ catch_std "$@"  ; }
+cout(){ echo "$OUT" ; }
+cerr(){ echo "$ERR" ; }
+
+
+
